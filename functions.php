@@ -48,4 +48,53 @@ function searchAll( $query ) {
 add_filter( 'the_search_query', 'searchAll' );
 
 
+class Term_Walker extends Walker {
+ 
+    // Set the properties of the element which give the ID of the current item and its parent
+    var $db_fields = array( 'parent' => 'parent', 'id' => 'term_id' );
+ 
+    // Displays start of a level. E.g '<ul>'
+    // @see Walker::start_lvl()
+    function start_lvl(&$output, $depth=0, $args=array()) {
+        $output .= "\n<ul>\n";
+    }
+ 
+    // Displays end of a level. E.g '</ul>'
+    // @see Walker::end_lvl()
+    function end_lvl(&$output, $depth=0, $args=array()) {
+        $output .= "</ul>\n";
+    }
+ 
+    // Displays start of an element. E.g '<li> Item Name'
+    // @see Walker::start_el()
+    function start_el(&$output, $item, $depth=0, $args=array()) {
+
+        $query_term = get_query_var( 'term' );
+        $class = '';
+
+        if($query_term == $item->slug){
+            $class = 'selected';
+        }
+
+        $output .= '<li class="'.$class.'"><a href="'.get_term_link( $item, $taxonomy_name ).'">'.esc_attr($item->name).'</a>';
+    }
+ 
+    // Displays end of an element. E.g '</li>'
+    // @see Walker::end_el()
+    function end_el(&$output, $item, $depth=0, $args=array()) {
+        $output .= "</li>\n";
+    }
+}
+
+/*
+    $taxonomy_name = 'product_cat';
+    $args = array( 'taxonomy' => $taxonomy_name );
+    $terms = get_terms('product_cat', $args);
+
+    $walker = new Term_Walker();
+
+    echo $walker->walk($terms, 3);
+*/
+
+
 ?>
